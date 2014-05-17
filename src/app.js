@@ -4,24 +4,23 @@ var HelloWorldLayer = cc.Layer.extend({
     sprite : null,
 
     moveSprite : function( position ) {
-       var sprite = this.getchildbytag(tag_sprite);
-        sprite.stopallactions();
-        sprite.runaction(cc.moveto.create(1, position));
+        var sprite = this.getChildByTag(TAG_SPRITE);
+        sprite.stopAllActions();
+        sprite.runAction(cc.MoveTo.create(1, position));
         var o = position.x - sprite.x;
         var a = position.y - sprite.y;
-        var at = math.atan(o / a) * 57.29577951;  // radians to degrees
+        var at = Math.atan(o / a) * 57.29577951;  // radians to degrees
 
         if (a < 0) {
             if (o < 0) {
-                at = 180 + math.abs(at);
-
-            } else  {
-                at = 180 - math.abs(at);
-
+                at = 180 + Math.abs(at);
+            } else {
+                at = 180 - Math.abs(at);
             }
         }
 
-        sprite.runaction(cc.rotateto.create(1, at));
+        sprite.runAction(cc.RotateTo.create(1, at));
+
     },
 
     ctor : function () {
@@ -52,21 +51,14 @@ var HelloWorldLayer = cc.Layer.extend({
         }
 
         var sprite = cc.Sprite.create(res.HelloWorld_png);
-
-        var layer = cc.LayerColor.create(cc.color(255, 255, 0, 100));
+        var layer = cc.LayerColor.create(cc.color(0, 0, 0, 0));
         this.addChild(layer, -1);
 
         this.addChild(sprite, 0, TAG_SPRITE);
-        sprite.x = 20;
+        sprite.x = 150;
         sprite.y = 150;
 
         sprite.runAction(cc.JumpTo.create(4, cc.p(300, 48), 100, 4));
-
-        var fadeIn = cc.FadeIn.create(1);
-        var fadeOut = cc.FadeOut.create(1);
-        var forever = cc.Sequence.create(fadeIn, fadeOut).repeatForever();
-        layer.runAction(forever);
-
         return true;
           
 //      //////////////////////////////
