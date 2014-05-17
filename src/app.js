@@ -32,13 +32,9 @@ var HelloWorldLayer = cc.Layer.extend({
             },
             onTouchEnded: function (touch, event) {
                 var target = event.getCurrentTarget();
-                cc.log("sprite onTouchesEnded.. ");
-                target.setOpacity(255);
-                if (target == sprite2) {
-                    containerForSprite1.setLocalZOrder(100);
-                } else if (target == sprite1) {
-                    containerForSprite1.setLocalZOrder(0);
-                }
+
+                target.x = -target.x;
+                target.y = -target.y;
             }
         });
 
