@@ -3,62 +3,52 @@ var TAG_SPRITE = 1;
 var HelloWorldLayer = cc.Layer.extend({
     sprite : null,
 
-    moveSprite : function( position ) {
-        var sprite = this.getChildByTag(TAG_SPRITE);
-        sprite.stopAllActions();
-        sprite.runAction(cc.MoveTo.create(1, position));
-        var o = position.x - sprite.x;
-        var a = position.y - sprite.y;
-        var at = Math.atan(o / a) * 57.29577951;  // radians to degrees
-
-        if (a < 0) {
-            if (o < 0) {
-                at = 180 + Math.abs(at);
-            } else {
-                at = 180 - Math.abs(at);
-            }
-        }
-
-        sprite.runAction(cc.RotateTo.create(1, at));
-
-    },
-
     ctor : function () {
         this._super();
         this.init();
 
-        if( 'touches' in cc.sys.capabilities ) {
-            cc.eventManager.addListener(cc.EventListener.create({
-                event: cc.EventListener.TOUCH_ALL_AT_ONCE,
-                onTouchesEnded:function (touches, event) {
-                    if (touches.length <= 0) {
-                        return;
-                    }
+        var listener = cc.EventListener.create({
+            event : cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches : true,
+            onTouchBegan: function (touch, event) {
+                var target = event.getCurrentTarget();
 
-                    event.getCurrentTarget().moveSprite(touches[0].getLocation());
+                var locationInNode = target.convertToNodeSpace(touch.getLocation());
+                var s = target.getContentSize();
+                var rect = cc.rect(0, 0, s.width, s.height);
+
+                if (cc.rectContainsPoint(rect, locationInNode)) {
+                    cc.log("sprite began... x = " + locationInNode.x + ", y = " + locationInNode.y);
+                    target.opacity = 180;
+                    return true;
                 }
-            }), this);
-
-        } else if ('mouse' in cc.sys.capabilities ) {
-            cc.eventManager.addListener({
-                event: cc.EventListener.MOUSE,
-                onMouseUp: function (event) {
-                    event.getCurrentTarget().moveSprite(event.getLocation());
-
+                return false;
+            },
+            onTouchMoved: function (touch, event) {
+                var target = event.getCurrentTarget();
+                var delta = touch.getDelta();
+                target.x += delta.x;
+                target.y += delta.y;
+            },
+            onTouchEnded: function (touch, event) {
+                var target = event.getCurrentTarget();
+                cc.log("sprite onTouchesEnded.. ");
+                target.setOpacity(255);
+                if (target == sprite2) {
+                    containerForSprite1.setLocalZOrder(100);
+                } else if (target == sprite1) {
+                    containerForSprite1.setLocalZOrder(0);
                 }
-            }, this);
-
-        }
+            }
+        });
 
         var sprite = cc.Sprite.create(res.HelloWorld_png);
         var layer = cc.LayerColor.create(cc.color(0, 0, 0, 0));
         this.addChild(layer, -1);
 
         this.addChild(sprite, 0, TAG_SPRITE);
-        sprite.x = 150;
-        sprite.y = 150;
+        cc.eventManager.addListener(listener, sprite);
 
-        sprite.runAction(cc.JumpTo.create(4, cc.p(300, 48), 100, 4));
         return true;
           
 //      //////////////////////////////
