@@ -1,8 +1,6 @@
 var TAG_SPRITE = 1;
 
 var HelloWorldLayer = cc.Layer.extend({
-    sprite : null,
-
     ctor : function () {
         this._super();
         this.init();
@@ -32,17 +30,39 @@ var HelloWorldLayer = cc.Layer.extend({
             },
             onTouchEnded: function (touch, event) {
                 var target = event.getCurrentTarget();
+                var size = cc.director.getWinSize();
 
                 target.x = -target.x;
                 target.y = -target.y;
+                if ( target.x <= 0 ) {
+                    target.x = 0;
+                }
+
+                if ( target.x > size.width ) {
+                    target.x = size.width;
+                }
+
+                if ( target.y <= 0 ) {
+                    target.y = 0;
+                }
+
+                if ( target.y > size.height ) {
+                    target.y = size.height;
+                }
             }
         });
 
+        var origin = cc.director.getVisibleOrigin();
+        var size = cc.director.getVisibleSize();
+
         var sprite = cc.Sprite.create(res.HelloWorld_png);
+        sprite.x = origin.x + size.width / 2;
+        sprite.y = origin.y + size.height / 2;
+        this.addChild(sprite, 0, TAG_SPRITE);
+
         var layer = cc.LayerColor.create(cc.color(0, 0, 0, 0));
         this.addChild(layer, -1);
 
-        this.addChild(sprite, 0, TAG_SPRITE);
         cc.eventManager.addListener(listener, sprite);
 
         return true;
